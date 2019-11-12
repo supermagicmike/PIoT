@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import iotsoa.iotsoaproject.controllers.utils.RestUtils;
 import iotsoa.iotsoaproject.models.TemperatureData;
 import iotsoa.iotsoaproject.services.TemperatureService;
+import obix.Obj;
+import obix.io.ObixDecoder;
+
 
 
 
@@ -52,7 +55,7 @@ public class TemperatureController {
 		JSONObject sub =new JSONObject();
 		JSONObject attr=new JSONObject();
 		try {
-			System.out.println("NUUUUUUUUUUUU :"+RestUtils.getProps().getProperty("nu"));
+			attr.put("xmlns:m2m",RestUtils.getProps().getProperty("xmlns"));
 			attr.put("nu",RestUtils.getProps().getProperty("nu"));
 			attr.put("nct",RestUtils.getProps().getProperty("nct"));
 			attr.put("rn",RestUtils.getProps().getProperty("rn"));
@@ -66,6 +69,21 @@ public class TemperatureController {
 		headers.put("Content-Type", RestUtils.getProps().getProperty("Content-Type"));
 		System.out.println("HEADERS :: "+headers.toString());
 		RestUtils.DoSub(RestUtils.getProps().getProperty("subaddress"),sub.toString(), headers);
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value="/Cintemp")
+	public void addCinTemperatureData(@RequestBody String  ci) throws JSONException{
+		TemperatureData td =new TemperatureData();
+		JSONObject resp = new JSONObject(ci);
+		JSONObject resp1 = new JSONObject(resp.get("m2m:sgn").toString()); 
+		JSONObject resp2 = new JSONObject(resp1.get("m2m:nev").toString()); 
+		JSONObject resp3 = new JSONObject(resp2.get("m2m:rep").toString());
+		JSONObject resp4 = new JSONObject(resp3.get("m2m:cin").toString()); 
+		System.out.println("DATA ::: " + resp4.toString());
+		Obj s = ObixDecoder.fromString( resp4.get("con").toString());
+		td.setTemp_extern(Integer.parseInt(s.get("temp_extern").toString()));
+		td.setTemp_intern(Integer.parseInt(s.get("temp_intern").toString()));	
+		service.addTemperature(td);		
 	}
 	
 }
