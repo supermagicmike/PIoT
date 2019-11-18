@@ -75,6 +75,7 @@ public class TemperatureController {
 	public void addCinTemperatureData(@RequestBody String  ci) throws JSONException{
 		TemperatureData td =new TemperatureData();
 		JSONObject resp = new JSONObject(ci);
+		System.out.println(resp.toString());
 		JSONObject resp1 = new JSONObject(resp.get("m2m:sgn").toString()); 
 		JSONObject resp2 = new JSONObject(resp1.get("m2m:nev").toString()); 
 		JSONObject resp3 = new JSONObject(resp2.get("m2m:rep").toString());
