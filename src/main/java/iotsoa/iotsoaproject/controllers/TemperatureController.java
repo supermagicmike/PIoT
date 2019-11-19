@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import iotsoa.iotsoaproject.controllers.utils.RestUtils;
+import iotsoa.iotsoaproject.models.MovementData;
 import iotsoa.iotsoaproject.models.TemperatureData;
 import iotsoa.iotsoaproject.services.TemperatureService;
 import obix.Obj;
@@ -67,33 +68,37 @@ public class TemperatureController {
 		headers.put("X-M2M-Origin", RestUtils.getProps().getProperty("X-M2M-Origin"));
 		headers.put("Content-Type", RestUtils.getProps().getProperty("Content-Type"));
 		System.out.println("HEADERS :: " + headers.toString());
+		System.out.println("Payload :: " + sub.toString());
 		RestUtils.DoSub(RestUtils.getProps().getProperty("subaddress"), sub.toString(), headers);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/Cintemp")
 	public void addCinTemperatureData(@RequestBody String ci) throws JSONException {
-		TemperatureData td = new TemperatureData();
 		JSONObject resp = new JSONObject(ci);
 		JSONObject resp1 = new JSONObject(resp.get("m2m:sgn").toString());
-		JSONObject resp2 = new JSONObject(resp1.get("m2m:nev").toString());
+		JSONObject resp2 = new JSONObject(resp1.get("m2m:nev").toString());																																																																															JSONObject resp2 = new JSONObject(resp1.get("m2m:nev").toString());
 		JSONObject resp3 = new JSONObject(resp2.get("m2m:rep").toString());
 		JSONObject resp4 = new JSONObject(resp3.get("m2m:cin").toString());
 		// System.out.println("DATA ::: " + resp4.toString());
 		Obj s = ObixDecoder.fromString(resp4.get("con").toString());
 		if (s.get("category").toString().equals("Temp")) {
+			TemperatureData td = new TemperatureData();
 			td.setTemp_extern(Integer.parseInt(s.get("temp_extern").toString()));
 			td.setTemp_intern(Integer.parseInt(s.get("temp_intern").toString()));
 			td.setDpt(s.get("dpt").toString());
 			td.setStage(s.get("stage").toString());
 			td.setRoom(s.get("room").toString());
 			service.addTemperature(td);
+			System.out.println(service.takeDecision(td));
 		} else {
 			if (s.get("category").toString().equals("Mvmt")) {
-				
+				MovementData mvmt = new MovementData();
+				mvmt.setMovement(s.get("Mvmt").getBool());
+				System.out.println(s.get("Mvmt").getBool());		
 			}
 
 		}
-		System.out.println(service.takeDecision(td));
+		
 	}
 
 }
