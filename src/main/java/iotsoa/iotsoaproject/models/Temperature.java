@@ -8,7 +8,9 @@ public class Temperature {
 		this.temp_extern = temp_extern;
 		this.temp_intern = temp_intern;
 	}
-	
+	public String toString(){
+		return "Temperature intern: "+this.temp_intern+" Temperature externe: "+this.temp_extern;
+	}
 }
 
 

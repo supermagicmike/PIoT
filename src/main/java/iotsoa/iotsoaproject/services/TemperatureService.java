@@ -3,6 +3,7 @@ package iotsoa.iotsoaproject.services;
 import org.springframework.stereotype.Service;
 
 import iotsoa.iotsoaproject.models.DptData;
+import iotsoa.iotsoaproject.models.Movement;
 import iotsoa.iotsoaproject.models.RoomData;
 import iotsoa.iotsoaproject.models.StageData;
 import iotsoa.iotsoaproject.models.Temperature;
@@ -78,6 +79,18 @@ public class TemperatureService {
 
 		//System.out.println(all.toString());
 
+	}
+	public HashMap<String, HashMap<String, HashMap<String, ArrayList<Temperature>>>> getAll(){
+		return all;
+	}
+	public HashMap<String, HashMap<String, ArrayList<Temperature>>> getStages(String dpt){
+		return all.get(dpt) ;
+	}
+	public HashMap<String, ArrayList<Temperature>> getRoom(String dpt,String stage){
+		return all.get(dpt).get(stage);
+	}
+	public ArrayList<Temperature> getTemperature(String dpt,String stage,String room){
+		return all.get(dpt).get(stage).get(room);
 	}
 
 	public String takeDecision(TemperatureData td) {
