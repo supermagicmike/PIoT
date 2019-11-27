@@ -7,12 +7,18 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Producer;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import iotsoa.iotsoaproject.controllers.utils.RestUtils;
 import iotsoa.iotsoaproject.models.Movement;
@@ -38,16 +44,16 @@ public class DataController {
 	}
 	//TEMPERATURE//////
 	@GetMapping("/temp")
-	public HashMap<String, HashMap<String, HashMap<String, ArrayList<Temperature>>>> getTempDatas() {
-		return tempService.getAll();
+	public HashMap<String, HashMap<String, HashMap<String, ArrayList<Temperature>>>> getTempDatas() throws JsonProcessingException {
+		return  tempService.getAll();
 	}
 	
 	@GetMapping("/temp/{dpt}")
-	public HashMap<String, HashMap<String, ArrayList<Temperature>>> getTempStages(String dpt){
-		return tempService.getStages(dpt) ;
+	public HashMap<String, HashMap<String, ArrayList<Temperature>>> getTempStages(@PathVariable String dpt){
+ 		return tempService.getStages(dpt) ;
 	}
 	@GetMapping("/temp/{dpt}/{stage}")
-	public HashMap<String, ArrayList<Temperature>> getTempRoom(String dpt,String stage){
+	public HashMap<String, ArrayList<Temperature>> getTempRoom(@PathVariable String dpt,@PathVariable String stage){
 		return tempService.getRoom(dpt, stage);
 	}
 
@@ -60,7 +66,6 @@ public class DataController {
 	public void addTemperatureData(@RequestBody TemperatureData td) {
 		System.out.println("TEMPERATURE :: :: " + td.toString());
 		tempService.addTemperature(td);
-		;
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//Movement///////
