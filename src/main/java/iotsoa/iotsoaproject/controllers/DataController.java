@@ -161,8 +161,8 @@ public class DataController {
 		HashMap<String, String> headers = new HashMap<String, String>();
 		headers.put("X-M2M-Origin", RestUtils.getProps().getProperty("X-M2M-Origin"));
 		headers.put("Content-Type", RestUtils.getProps().getProperty("Content-Type"));
-		//String address="https://webhook.site/e79d66c2-c4ab-4796-b5bf-166ed0c4c773";
-		//////
+		String address="172.20.10.2:8080/data";
+		
 		Obj s = ObixDecoder.fromString(resp4.get("con").toString());
 		if (s.get("category").toString().equals("Temp")) {
 			TemperatureData td = new TemperatureData();
@@ -173,7 +173,7 @@ public class DataController {
 			td.setRoom(s.get("room").toString());
 			tempService.addTemperature(td);
 			String payload=DecisionController.DecisontoJson(DecisionController.getTDecision(td));
-			//RestUtils.DoPost(address, payload, headers);
+			RestUtils.DoPost(address, payload, headers);
 
 
 		} else {
@@ -185,7 +185,7 @@ public class DataController {
 				mvmt.setRoom(s.get("room").toString());
 				mvmtService.addMovement(mvmt);
 				String payload=DecisionController.DecisontoJson(DecisionController.getMDecision(mvmt));
-				//RestUtils.DoPost(address, payload, headers);
+				RestUtils.DoPost(address, payload, headers);
 			}
 
 		}
