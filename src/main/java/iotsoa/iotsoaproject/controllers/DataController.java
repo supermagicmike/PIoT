@@ -158,6 +158,11 @@ public class DataController {
 		JSONObject resp3 = new JSONObject(resp2.get("m2m:rep").toString());
 		JSONObject resp4 = new JSONObject(resp3.get("m2m:cin").toString());
 		// System.out.println("DATA ::: " + resp4.toString());
+		HashMap<String, String> headers = new HashMap<String, String>();
+		headers.put("X-M2M-Origin", RestUtils.getProps().getProperty("X-M2M-Origin"));
+		headers.put("Content-Type", RestUtils.getProps().getProperty("Content-Type"));
+		//String address="https://webhook.site/e79d66c2-c4ab-4796-b5bf-166ed0c4c773";
+		//////
 		Obj s = ObixDecoder.fromString(resp4.get("con").toString());
 		if (s.get("category").toString().equals("Temp")) {
 			TemperatureData td = new TemperatureData();
@@ -167,7 +172,10 @@ public class DataController {
 			td.setStage(s.get("stage").toString());
 			td.setRoom(s.get("room").toString());
 			tempService.addTemperature(td);
-			System.out.println(tempService.takeDecision(td));
+			String payload=DecisionController.DecisontoJson(DecisionController.getTDecision(td));
+			//RestUtils.DoPost(address, payload, headers);
+
+
 		} else {
 			if (s.get("category").toString().equals("Mvmt")) {
 				MovementData mvmt = new MovementData();
@@ -176,7 +184,8 @@ public class DataController {
 				mvmt.setStage(s.get("stage").toString());
 				mvmt.setRoom(s.get("room").toString());
 				mvmtService.addMovement(mvmt);
-				System.out.println(s.get("Mvmt").getBool());
+				String payload=DecisionController.DecisontoJson(DecisionController.getMDecision(mvmt));
+				//RestUtils.DoPost(address, payload, headers);
 			}
 
 		}

@@ -16,8 +16,8 @@ import java.util.HashMap;
 
 @Service
 public class TemperatureService {
-	private static int LOWTEMP = 18;
-	private static int HIGHTEMP = 27;
+	//private static int LOWTEMP = 18;
+	//private static int HIGHTEMP = 27;
 	// private List<TemperatureData> templist= new
 	// ArrayList<TemperatureData>(Arrays.asList(
 	// new TemperatureData(12,20,"",""),new TemperatureData(12,28)));
@@ -50,7 +50,6 @@ public class TemperatureService {
 				}
 
 				else {
-					System.out.println("je suis la ");
 					ArrayList<Temperature> m = new ArrayList<>();
 					m.add(new Temperature(td.getTemp_extern(), td.getTemp_intern()));
 					HashMap<String, ArrayList<Temperature>> room = new HashMap<>();
@@ -93,16 +92,6 @@ public class TemperatureService {
 		return all.get(dpt).get(stage).get(room);
 	}
 
-	public String takeDecision(TemperatureData td) {
-		// TODO Auto-generated method stub
-		String res = "";
-		if (td.getTemp_extern() < td.getTemp_intern() && td.getTemp_extern() > LOWTEMP
-				&& td.getTemp_extern() < HIGHTEMP) {
-			res += "OPEN WINDOW MAN";
-			System.out.println("OPEN WINDOW MAN");
-		} else
-			res += "CLOSE WINDOW MAN";
-		return res;
-	}
+
 
 }

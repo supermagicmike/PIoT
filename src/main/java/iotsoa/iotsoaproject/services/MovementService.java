@@ -40,7 +40,6 @@ public class MovementService {
 				}
 
 				else {
-					System.out.println("je suis la ");
 					ArrayList<Movement> m = new ArrayList<>();
 					m.add(new Movement(td.getMovement()));
 					HashMap<String, ArrayList<Movement>> room = new HashMap<>();
