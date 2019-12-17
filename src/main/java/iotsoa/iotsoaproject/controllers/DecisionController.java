@@ -32,13 +32,16 @@ public static String DecisontoJson(Decision decision){
 }
 public static Decision getTDecision(TemperatureData temp){
 	String des;
-	if (temp.getTemp_intern()<LOWTEMP){
+	System.out.println("temp intern : "+temp.getTemp_intern());
+	System.out.println("temp extern : "+temp.getTemp_extern());
+	if (temp.getTemp_intern()<temp.getTemp_extern()){
 		des="LOW";
-	}if(temp.getTemp_intern()>HIGHTEMP){
+	}else if(temp.getTemp_extern()<temp.getTemp_intern()&&temp.getTemp_extern()>=LOWTEMP&&temp.getTemp_extern()<=HIGHTEMP){
 		des="HIGH";
 	}else{
 		des="OK";
 	}
+	System.out.println("Symptom :: "+des);
 	return new Decision(des,"Temp",temp.getDpt(),temp.getStage(),temp.getRoom());
 	
 }

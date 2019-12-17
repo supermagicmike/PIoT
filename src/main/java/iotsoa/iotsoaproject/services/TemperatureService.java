@@ -1,17 +1,10 @@
 package iotsoa.iotsoaproject.services;
 
 import org.springframework.stereotype.Service;
-
-import iotsoa.iotsoaproject.models.DptData;
-import iotsoa.iotsoaproject.models.Movement;
-import iotsoa.iotsoaproject.models.RoomData;
-import iotsoa.iotsoaproject.models.StageData;
 import iotsoa.iotsoaproject.models.Temperature;
 import iotsoa.iotsoaproject.models.TemperatureData;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 @Service
@@ -54,7 +47,7 @@ public class TemperatureService {
 					m.add(new Temperature(td.getTemp_extern(), td.getTemp_intern()));
 					HashMap<String, ArrayList<Temperature>> room = new HashMap<>();
 					room.putIfAbsent(td.getRoom(), m);
-					HashMap<String, HashMap<String, ArrayList<Temperature>>> etage = new HashMap<>();
+					//HashMap<String, HashMap<String, ArrayList<Temperature>>> etage = new HashMap<>();
 					all.get(td.getDpt()).putIfAbsent(td.getStage(), room);
 
 				}

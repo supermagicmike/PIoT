@@ -1,7 +1,10 @@
 package iotsoa.iotsoaproject.models;
 
+import java.util.Date;
+
 public class MovementData {
 	private Boolean movement;
+	private Date date;
 	private String room;
 	private String stage;
 	private String dpt;
@@ -12,6 +15,15 @@ public class MovementData {
 		this.room = room;
 		this.stage = stage;
 		this.dpt = dpt;
+		this.date= new Date();
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public MovementData() {

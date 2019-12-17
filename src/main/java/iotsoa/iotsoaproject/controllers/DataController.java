@@ -1,9 +1,12 @@
 package iotsoa.iotsoaproject.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +26,16 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import iotsoa.iotsoaproject.controllers.utils.RestUtils;
 import iotsoa.iotsoaproject.models.Movement;
 import iotsoa.iotsoaproject.models.MovementData;
+import iotsoa.iotsoaproject.models.ServiceDecision;
 import iotsoa.iotsoaproject.models.Temperature;
 import iotsoa.iotsoaproject.models.TemperatureData;
 import iotsoa.iotsoaproject.services.MovementService;
 import iotsoa.iotsoaproject.services.TemperatureService;
+import obix.Int;
 import obix.Obj;
+import obix.Str;
 import obix.io.ObixDecoder;
+import obix.io.ObixEncoder;
 
 @RestController
 public class DataController {
@@ -75,11 +82,11 @@ public class DataController {
 	}
 	
 	@GetMapping("/mvmt/{dpt}")
-	public HashMap<String, HashMap<String, ArrayList<Movement>>> getMvmtStages(String dpt){
+	public HashMap<String, HashMap<String, ArrayList<Movement>>> getMvmtStages(@PathVariable String dpt){
 		return mvmtService.getStages(dpt) ;
 	}
 	@GetMapping("/mvmt/{dpt}/{stage}")
-	public HashMap<String, ArrayList<Movement>> getMvmtRoom(String dpt,String stage){
+	public HashMap<String, ArrayList<Movement>> getMvmtRoom(@PathVariable String dpt,@PathVariable String stage){
 		return mvmtService.getRoom(dpt, stage);
 	}
 
@@ -140,16 +147,14 @@ public class DataController {
 					String subadd=RestUtils.getProps().getProperty("Tsubaddress")+("GEI_" + (j+1)+"_DATA"+"/"+"GEI_" + (j+1)+"_DATA_"+(k+1));
 					System.out.println("JE vais me subscribe à cette entitée : "+subadd);
 					RestUtils.DoSub(subadd, sub.toString(), headers);
-					subadd=RestUtils.getProps().getProperty("Msubaddress")+("GEI_" + (j+1)+"_DATA_"+(k+1));
+					subadd=RestUtils.getProps().getProperty("Msubaddress")+("GEI_" + (j+1)+"_DATA"+"/"+"GEI_" + (j+1)+"_DATA_"+(k+1));
 					System.out.println("JE vais me subscribe à cette entitée : "+subadd);
 					RestUtils.DoSub(subadd, sub.toString(), headers);
 				}
 			}
 		}
 		
-		
 	
-
 	@RequestMapping(method = RequestMethod.POST, value = "/Cintemp")
 	public void addCinData(@RequestBody String ci) throws JSONException {
 		JSONObject resp = new JSONObject(ci);
@@ -157,14 +162,15 @@ public class DataController {
 		JSONObject resp2 = new JSONObject(resp1.get("m2m:nev").toString());
 		JSONObject resp3 = new JSONObject(resp2.get("m2m:rep").toString());
 		JSONObject resp4 = new JSONObject(resp3.get("m2m:cin").toString());
-		// System.out.println("DATA ::: " + resp4.toString());
+		 System.out.println("DATA ::: " + resp4.get("con"));
 		HashMap<String, String> headers = new HashMap<String, String>();
 		headers.put("X-M2M-Origin", RestUtils.getProps().getProperty("X-M2M-Origin"));
 		headers.put("Content-Type", RestUtils.getProps().getProperty("Content-Type"));
-		String address="172.20.10.2:8080/data";
-		
+		String address;
+		String address2;
 		Obj s = ObixDecoder.fromString(resp4.get("con").toString());
 		if (s.get("category").toString().equals("Temp")) {
+			address=RestUtils.getProps().getProperty("WindowManagement");
 			TemperatureData td = new TemperatureData();
 			td.setTemp_extern(Integer.parseInt(s.get("temp_extern").toString()));
 			td.setTemp_intern(Integer.parseInt(s.get("temp_intern").toString()));
@@ -178,6 +184,8 @@ public class DataController {
 
 		} else {
 			if (s.get("category").toString().equals("Mvmt")) {
+				address=RestUtils.getProps().getProperty("LightManagement");
+				address2=RestUtils.getProps().getProperty("DoorManagement");
 				MovementData mvmt = new MovementData();
 				mvmt.setMovement(s.get("Mvmt").getBool());
 				mvmt.setDpt(s.get("dpt").toString());
@@ -186,10 +194,52 @@ public class DataController {
 				mvmtService.addMovement(mvmt);
 				String payload=DecisionController.DecisontoJson(DecisionController.getMDecision(mvmt));
 				RestUtils.DoPost(address, payload, headers);
+				RestUtils.DoPost(address2, payload, headers);
 			}
 
 		}
 
 	}
+	
+	
+	////////////////////////////// DECISION////////////////////////////////////////////////////
+	@RequestMapping(method = RequestMethod.POST, value = "/Decision")
+	public void GetandSendDecision(@RequestBody String data){
+		try {
+			System.out.println("ICI !!!!");
+			ServiceDecision data_object = new ObjectMapper().readValue(data, ServiceDecision.class);
+			System.out.println("data dec :"+data_object.getDecision()+" path  "+data_object.getPath()+" type :: "+data_object.getType());
+			String address=RestUtils.getProps().getProperty("Action")+"/"+data_object.getType();
+			HashMap<String, String> headers = new HashMap<String, String>();
+			headers.put("X-M2M-Origin", RestUtils.getProps().getProperty("X-M2M-Origin"));
+			headers.put("Content-Type", "application/json;ty=4");
+			Obj obj2= new Obj();
+			obj2.add(new Str("Decision", data_object.getDecision()));
+			JSONObject obj = new JSONObject();
+			JSONObject resource = new JSONObject();
+			obj = new JSONObject();
+			obj.put("cnf", "application/text");
+			obj.put("con", ObixEncoder.toString(obj2));
+			obj.put("rn", data_object.getPath());
+			resource.put("m2m:cin", obj);
+			System.out.println(resource.toString());
+			HttpResponse resp= RestUtils.DoPost(address, resource.toString(), headers);
+			System.out.println("Response status :: " +resp.getStatusLine().getStatusCode());
+			//System.out.println("Response body :: " +EntityUtils.toString(resp.getEntity()));
+			String body =EntityUtils.toString(resp.getEntity());
+			int code = resp.getStatusLine().getStatusCode();
+			if (code==409)
+			{
+				System.out.println("I AM HEEEEEERE");
+				RestUtils.DoDelete(address+"/"+data_object.getPath(), headers);
+				RestUtils.DoPost(address, resource.toString(), headers);		
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 
 }

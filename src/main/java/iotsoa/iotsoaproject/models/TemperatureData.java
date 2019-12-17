@@ -1,11 +1,14 @@
 package iotsoa.iotsoaproject.models;
 
+import java.util.Date;
+
 public class TemperatureData {
 	private int temp_extern;
 	private int temp_intern;
 	private String room;
 	private String stage;
 	private String dpt;
+	private Date date;
 	
 
 	public TemperatureData(int temp_extern, int temp_intern, String room, String stage, String dpt) {
@@ -15,6 +18,7 @@ public class TemperatureData {
 		this.room = room;
 		this.stage = stage;
 		this.dpt = dpt;
+		this.setDate(new Date());
 	}
 
 	public TemperatureData() {
@@ -59,5 +63,13 @@ public class TemperatureData {
 
 	public void setDpt(String dpt) {
 		this.dpt = dpt;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

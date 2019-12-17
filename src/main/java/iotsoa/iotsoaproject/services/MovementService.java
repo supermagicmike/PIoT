@@ -3,11 +3,7 @@ package iotsoa.iotsoaproject.services;
 import org.springframework.stereotype.Service;
 import iotsoa.iotsoaproject.models.MovementData;
 import iotsoa.iotsoaproject.models.Movement;
-import iotsoa.iotsoaproject.models.MovementData;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 @Service
@@ -44,7 +40,7 @@ public class MovementService {
 					m.add(new Movement(td.getMovement()));
 					HashMap<String, ArrayList<Movement>> room = new HashMap<>();
 					room.putIfAbsent(td.getRoom(), m);
-					HashMap<String, HashMap<String, ArrayList<Movement>>> etage = new HashMap<>();
+				//	HashMap<String, HashMap<String, ArrayList<Movement>>> etage = new HashMap<>();
 					all.get(td.getDpt()).putIfAbsent(td.getStage(), room);
 
 				}
