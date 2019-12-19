@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -28,6 +29,20 @@ public class RestUtils {
 		try {
 			post.setEntity(new StringEntity(payload));
 			return httpClient.execute(post);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static HttpResponse DoDelete(String address,HashMap<String,String>headers){
+		CloseableHttpClient httpClient= HttpClients.createDefault();
+		HttpDelete delete= new HttpDelete(address);
+		for (Entry<String, String> entry : headers.entrySet()) {
+			delete.setHeader(entry.getKey(), entry.getValue());
+		} 
+		try {
+			return httpClient.execute(delete);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

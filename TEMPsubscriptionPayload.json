@@ -1,7 +1,0 @@
-{
-    "m2m:sub": {
-      "nu": "http://localhost:8081/temp",
-      "nct": "2",
-      "rn": "SUB_TEMP_SENSOR"
-    }
-  }

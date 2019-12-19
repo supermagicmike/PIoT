@@ -1,22 +1,16 @@
 package iotsoa.iotsoaproject.services;
 
 import org.springframework.stereotype.Service;
-
-import iotsoa.iotsoaproject.models.DptData;
-import iotsoa.iotsoaproject.models.RoomData;
-import iotsoa.iotsoaproject.models.StageData;
 import iotsoa.iotsoaproject.models.Temperature;
 import iotsoa.iotsoaproject.models.TemperatureData;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 @Service
 public class TemperatureService {
-	private static int LOWTEMP = 18;
-	private static int HIGHTEMP = 27;
+	//private static int LOWTEMP = 18;
+	//private static int HIGHTEMP = 27;
 	// private List<TemperatureData> templist= new
 	// ArrayList<TemperatureData>(Arrays.asList(
 	// new TemperatureData(12,20,"",""),new TemperatureData(12,28)));
@@ -49,12 +43,11 @@ public class TemperatureService {
 				}
 
 				else {
-					System.out.println("je suis la ");
 					ArrayList<Temperature> m = new ArrayList<>();
 					m.add(new Temperature(td.getTemp_extern(), td.getTemp_intern()));
 					HashMap<String, ArrayList<Temperature>> room = new HashMap<>();
 					room.putIfAbsent(td.getRoom(), m);
-					HashMap<String, HashMap<String, ArrayList<Temperature>>> etage = new HashMap<>();
+					//HashMap<String, HashMap<String, ArrayList<Temperature>>> etage = new HashMap<>();
 					all.get(td.getDpt()).putIfAbsent(td.getStage(), room);
 
 				}
@@ -79,17 +72,19 @@ public class TemperatureService {
 		//System.out.println(all.toString());
 
 	}
-
-	public String takeDecision(TemperatureData td) {
-		// TODO Auto-generated method stub
-		String res = "";
-		if (td.getTemp_extern() < td.getTemp_intern() && td.getTemp_extern() > LOWTEMP
-				&& td.getTemp_extern() < HIGHTEMP) {
-			res += "OPEN WINDOW MAN";
-			System.out.println("OPEN WINDOW MAN");
-		} else
-			res += "CLOSE WINDOW MAN";
-		return res;
+	public HashMap<String, HashMap<String, HashMap<String, ArrayList<Temperature>>>> getAll(){
+		return all;
 	}
+	public HashMap<String, HashMap<String, ArrayList<Temperature>>> getStages(String dpt){
+		return all.get(dpt) ;
+	}
+	public HashMap<String, ArrayList<Temperature>> getRoom(String dpt,String stage){
+		return all.get(dpt).get(stage);
+	}
+	public ArrayList<Temperature> getTemperature(String dpt,String stage,String room){
+		return all.get(dpt).get(stage).get(room);
+	}
+
+
 
 }
