@@ -1,0 +1,6 @@
+Originator=admin:admin
+ApiURL=https://www.prevision-meteo.ch/services/json/lat=46.259lng=1.4659393
+Sensors=http://127.0.0.1:8080/~/mn-cse/mn-name/Temperature_Sensor/;http://127.0.0.1:8080/~/mn-cse/mn-name/Mouvement_Sensor/
+Root=http://127.0.0.1:8080/~/mn-cse/mn-name/
+min_sensors=-10;20;40
+max_sensors=20;37;50
